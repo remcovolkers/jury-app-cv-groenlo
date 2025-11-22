@@ -1,22 +1,144 @@
-import React from 'react';
-import logo from '../../../logo.svg';
-import './App.css';
-import { JuryList } from '../components/JuryList';
+import React, { useState, useEffect } from 'react';
+import { Layout } from '../components/Layout';
+import { LoginPage } from './LoginPage';
+import { DashboardPage } from './DashboardPage';
+import { CategoryPage } from './CategoryPage';
+import { VotePage } from './VotePage';
+import { ExportPage } from './ExportPage';
+
+// Infrastructure
+import { StaticAuthService } from '../../../infrastructure/auth/StaticAuthService';
+import { StaticParticipantRepository } from '../../../infrastructure/persistence/StaticParticipantRepository';
+import { LocalStorageVoteRepository } from '../../../infrastructure/persistence/LocalStorageVoteRepository';
+
+// Use Cases
+import { LoginJury } from '../../../application/use-cases/LoginJury';
+import { GetJuryDashboard } from '../../../application/use-cases/GetJuryDashboard';
+import { GetParticipants, ParticipantWithVote } from '../../../application/use-cases/GetParticipants';
+import { SubmitVote } from '../../../application/use-cases/SubmitVote';
+import { ExportVotes } from '../../../application/use-cases/ExportVotes';
+
+// --- DEPENDENCY INJECTION ---
+const authService = new StaticAuthService();
+const participantRepo = new StaticParticipantRepository(authService);
+const voteRepo = new LocalStorageVoteRepository();
+
+const loginJury = new LoginJury(authService);
+const getDashboard = new GetJuryDashboard(participantRepo, voteRepo);
+const getParticipants = new GetParticipants(participantRepo, voteRepo);
+const submitVote = new SubmitVote(voteRepo);
+const exportVotes = new ExportVotes(voteRepo);
+
+type ViewState = 'login' | 'dashboard' | 'category' | 'vote' | 'export';
 
 function App() {
+  const [view, setView] = useState<ViewState>('login');
+  const [juryCode, setJuryCode] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeParticipant, setActiveParticipant] = useState<ParticipantWithVote | null>(null);
+
+  // Restore session
+  useEffect(() => {
+    const savedCode = localStorage.getItem('jury_code_v2');
+    if (savedCode) {
+      // Validate if code is still valid (optional, but good practice)
+      loginJury.execute(savedCode).then(isValid => {
+        if (isValid) {
+          setJuryCode(savedCode);
+          setView('dashboard');
+        }
+      });
+    }
+  }, []);
+
+  const handleLoginSuccess = (code: string) => {
+    setJuryCode(code);
+    localStorage.setItem('jury_code_v2', code);
+    setView('dashboard');
+  };
+
+  const handleLogout = () => {
+    if (window.confirm("Uitloggen?")) {
+      setJuryCode(null);
+      localStorage.removeItem('jury_code_v2');
+      setView('login');
+    }
+  };
+
+  const handleCategorySelect = (catId: string) => {
+    setActiveCategory(catId);
+    setView('category');
+  };
+
+  const handleParticipantSelect = (participant: ParticipantWithVote) => {
+    setActiveParticipant(participant);
+    setView('vote');
+  };
+
+  const handleVoteSaved = () => {
+    // Show toast or something?
+    // For now just go back to category
+    setView('category');
+    setActiveParticipant(null);
+  };
+
+  const handleReset = () => {
+    setJuryCode(null);
+    localStorage.removeItem('jury_code_v2');
+    setView('login');
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1>Jury App - CV Groenlo</h1>
-        <p>
-          Hexagonal Architecture Demo
-        </p>
-      </header>
-      <main>
-        <JuryList />
-      </main>
-    </div>
+    <Layout>
+      {view === 'login' && (
+        <LoginPage loginJury={loginJury} onLoginSuccess={handleLoginSuccess} />
+      )}
+
+      {view === 'dashboard' && juryCode && (
+        <DashboardPage
+          juryCode={juryCode}
+          getDashboard={getDashboard}
+          onLogout={handleLogout}
+          onSelectCategory={handleCategorySelect}
+          onExport={() => setView('export')}
+        />
+      )}
+
+      {view === 'category' && juryCode && activeCategory && (
+        <CategoryPage
+          juryCode={juryCode}
+          categoryId={activeCategory}
+          getParticipants={getParticipants}
+          onBack={() => {
+            setActiveCategory(null);
+            setView('dashboard');
+          }}
+          onSelectParticipant={handleParticipantSelect}
+        />
+      )}
+
+      {view === 'vote' && juryCode && activeParticipant && (
+        <VotePage
+          juryCode={juryCode}
+          participant={activeParticipant}
+          submitVote={submitVote}
+          onBack={() => {
+            setActiveParticipant(null);
+            setView('category');
+          }}
+          onVoteSaved={handleVoteSaved}
+        />
+      )}
+
+      {view === 'export' && juryCode && (
+        <ExportPage
+          juryCode={juryCode}
+          exportVotes={exportVotes}
+          onBack={() => setView('dashboard')}
+          onReset={handleReset}
+        />
+      )}
+    </Layout>
   );
 }
 

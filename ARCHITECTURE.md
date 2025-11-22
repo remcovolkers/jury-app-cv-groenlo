@@ -1,86 +1,45 @@
-# Hexagonal Architecture - Dependency Flow
+# Hexagonal Architecture - Jury App
+
+This project follows the Hexagonal Architecture (Ports and Adapters) pattern to separate the core business logic from external concerns like the UI and data persistence.
+
+## Structure
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    ADAPTERS LAYER (UI)                          │
-│  ┌────────────────────────────────────────────────────────┐     │
-│  │  src/adapters/ui/                                      │     │
-│  │  - components/JuryList.tsx                             │     │
-│  │  - pages/App.tsx                                       │     │
-│  └────────────────────────────────────────────────────────┘     │
-└────────────────────────┬────────────────────────────────────────┘
-                         │ depends on
-                         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    APPLICATION LAYER                            │
-│  ┌────────────────────────────────────────────────────────┐     │
-│  │  src/application/use-cases/                            │     │
-│  │  - GetAllJuries.ts                                     │     │
-│  │  - CreateJury.ts                                       │     │
-│  └────────────────────────────────────────────────────────┘     │
-└────────────────────────┬────────────────────────────────────────┘
-                         │ depends on
-                         ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     DOMAIN LAYER (CORE)                         │
-│  ┌────────────────────────────────────────────────────────┐     │
-│  │  src/domain/                                           │     │
-│  │  - entities/Jury.ts                                    │     │
-│  │  - ports/IJuryRepository.ts (interface)                │     │
-│  └────────────────────────────────────────────────────────┘     │
-└────────────────────────▲────────────────────────────────────────┘
-                         │ implements
-                         │
-┌─────────────────────────────────────────────────────────────────┐
-│                  INFRASTRUCTURE LAYER                           │
-│  ┌────────────────────────────────────────────────────────┐     │
-│  │  src/infrastructure/                                   │     │
-│  │  - persistence/InMemoryJuryRepository.ts               │     │
-│  │  - api/ApiClient.ts                                    │     │
-│  └────────────────────────────────────────────────────────┘     │
-└─────────────────────────────────────────────────────────────────┘
+src/
+├── domain/                 # Core Business Logic (Inner Layer)
+│   ├── entities/           # Domain Objects (Participant, Vote, Category)
+│   └── ports/              # Interfaces (IParticipantRepository, IVoteRepository)
+│
+├── application/            # Application Logic (Middle Layer)
+│   └── use-cases/          # Orchestrates domain objects (SubmitVote, GetDashboard)
+│
+├── adapters/               # Interface Adapters (Outer Layer)
+│   └── ui/                 # React Components and Pages
+│
+└── infrastructure/         # External Implementations (Outer Layer)
+    ├── persistence/        # LocalStorage and Static Data implementations
+    └── auth/               # Static Authentication service
 ```
 
-## Key Principles
+## Dependency Rule
 
-1. **Dependency Rule**: Dependencies point inward
-   - UI/Adapters → Application → Domain
-   - Infrastructure → Domain (implements ports)
+Dependencies always point **inward**.
+- **Adapters** depend on **Application** and **Domain**.
+- **Application** depends on **Domain**.
+- **Infrastructure** depends on **Domain** (implements ports).
+- **Domain** depends on **Nothing**.
 
-2. **Domain Independence**: The domain layer has NO dependencies on external layers
+## Data Flow Example: Submitting a Vote
 
-3. **Ports**: Interfaces defined in domain, implemented in infrastructure
+1. **User** interacts with `VotePage.tsx` (Adapter).
+2. `VotePage` calls `SubmitVote.execute()` (Application Use Case).
+3. `SubmitVote` creates a `Vote` entity (Domain).
+4. `SubmitVote` calls `IVoteRepository.save()` (Domain Port).
+5. `LocalStorageVoteRepository` (Infrastructure) implements `save()` and writes to browser storage.
 
-4. **Adapters**: Convert external data to/from domain models
+## Key Concepts
 
-## Data Flow Example: Creating a Jury
-
-```
-User Input (UI)
-    │
-    ├─> JuryList.tsx (Adapter)
-    │       │
-    │       ├─> CreateJury.execute() (Use Case)
-    │       │       │
-    │       │       ├─> JuryEntity.create() (Domain)
-    │       │       │
-    │       │       └─> IJuryRepository.save() (Port)
-    │       │                   │
-    │       │                   └─> InMemoryJuryRepository.save() (Infrastructure)
-    │       │
-    │       └─> GetAllJuries.execute() (Use Case)
-    │               │
-    │               └─> IJuryRepository.getAll() (Port)
-    │                           │
-    │                           └─> InMemoryJuryRepository.getAll() (Infrastructure)
-    │
-    └─> Display Updated List
-```
-
-## Benefits of This Architecture
-
-- **Testability**: Each layer can be tested independently
-- **Maintainability**: Clear separation of concerns
-- **Flexibility**: Easy to swap implementations (e.g., replace InMemory with HTTP API)
-- **Scalability**: New features follow the same pattern
-- **Independence**: Business logic is framework-agnostic
+- **Entities**: Pure data structures with business rules (e.g., `Vote`).
+- **Ports**: Interfaces that define how the application interacts with the outside world.
+- **Use Cases**: Specific actions a user can perform (e.g., `LoginJury`).
+- **Adapters**: Convert data between the UI and the Application layer.
