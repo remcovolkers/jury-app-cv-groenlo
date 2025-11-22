@@ -46,7 +46,6 @@ export const VotePage: React.FC<VotePageProps> = ({
                 <div className="flex-1 space-y-8 py-4">
                     <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 text-center">
                         <h3 className="font-bold text-xl text-blue-900 mb-1">{participant.name}</h3>
-                        <p className="text-blue-600 italic">"{participant.title}"</p>
                     </div>
 
                     {/* Originaliteit Slider */}

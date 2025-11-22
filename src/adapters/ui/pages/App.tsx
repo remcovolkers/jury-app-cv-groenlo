@@ -51,6 +51,33 @@ function App() {
     }
   }, []);
 
+  // Browser back button handling
+  useEffect(() => {
+    const handlePopState = () => {
+      // Handle back navigation based on current view
+      if (view === 'vote') {
+        setActiveParticipant(null);
+        setView('category');
+      } else if (view === 'category') {
+        setActiveCategory(null);
+        setView('dashboard');
+      } else if (view === 'export') {
+        setView('dashboard');
+      } else if (view === 'dashboard') {
+        // At dashboard, we could logout or do nothing
+        // For now, do nothing (prevents accidental exit)
+      }
+    };
+
+    // Push a state when view changes (except login)
+    if (view !== 'login') {
+      window.history.pushState({ view }, '');
+    }
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [view]);
+
   const handleLoginSuccess = (code: string) => {
     setJuryCode(code);
     localStorage.setItem('jury_code_v2', code);

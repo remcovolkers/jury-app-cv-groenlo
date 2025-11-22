@@ -1,7 +1,7 @@
 import { IParticipantRepository } from '../../domain/ports/IParticipantRepository';
 import { IVoteRepository } from '../../domain/ports/IVoteRepository';
 import { Category } from '../../domain/entities/Category';
-import { Truck, Car, Users } from 'lucide-react';
+import { Truck, Car, Users, Baby, Footprints } from 'lucide-react';
 
 export interface DashboardCategory extends Category {
     totalParticipants: number;
@@ -10,9 +10,11 @@ export interface DashboardCategory extends Category {
 }
 
 const CATEGORIES_CONFIG: Category[] = [
-    { id: 'groteWagens', label: 'Grote Wagens', icon: Truck, color: 'bg-blue-500' },
+    { id: 'kindergroepen', label: 'Kindergroepen', icon: Baby, color: 'bg-pink-500' },
+    { id: 'kleineLoopgroepen', label: 'Kleine Loopgroepen', icon: Footprints, color: 'bg-purple-500' },
+    { id: 'groteGroepen', label: 'Grote Groepen', icon: Users, color: 'bg-indigo-500' },
     { id: 'kleineWagens', label: 'Kleine Wagens', icon: Car, color: 'bg-green-500' },
-    { id: 'loopgroepen', label: 'Loopgroepen', icon: Users, color: 'bg-purple-500' },
+    { id: 'groteWagens', label: 'Grote Wagens', icon: Truck, color: 'bg-blue-500' },
 ];
 
 export class GetJuryDashboard {

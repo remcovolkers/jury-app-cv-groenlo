@@ -3,29 +3,31 @@ import { IParticipantRepository } from '../../domain/ports/IParticipantRepositor
 import { IAuthService } from '../../domain/ports/IAuthService';
 
 const INITIAL_DATA = {
-    groteWagens: [
-        { id: 'g1', name: 'De Vrolijke Bouwers', title: 'Reis om de wereld' },
-        { id: 'g2', name: 'CV De Doordouwers', title: 'Vikings op pad' },
-        { id: 'g3', name: 'Buurtschap Centrum', title: 'Alice in Wonderland' },
-        { id: 'g4', name: 'De Laatkomers', title: 'Tijdreizigers' },
-        { id: 'g5', name: 'CV Net Op Tijd', title: 'Steampunk Circus' },
-        { id: 'g6', name: 'De Bouwloods', title: 'Atlantis Herrezen' },
+    kindergroepen: [
+        { id: 'kg1', name: 'De Vonkies' },
+        { id: 'kg2', name: 'De Noamatters Jeugd' },
+        { id: 'kg3', name: 'Jeugd van tegenwoordig' },
+    ],
+    kleineLoopgroepen: [
+        { id: 'kl1', name: 'Club Sherry' },
+        { id: 'kl2', name: 'Duo Penotti' },
+        { id: 'kl3', name: 'Torenblaozers' },
+    ],
+    groteGroepen: [
+        { id: 'gg1', name: 'De bittere ballen Grolle' },
+        { id: 'gg2', name: 'Per consumptie wijzer' },
+        { id: 'gg3', name: 'De Popies' },
     ],
     kleineWagens: [
-        { id: 'k1', name: 'De Mini\'s', title: 'Mario Kart' },
-        { id: 'k2', name: 'Duo Penotti', title: 'Twee kleuren in de wind' },
-        { id: 'k3', name: 'De Solist', title: 'Ik loop alleen' },
-        { id: 'k4', name: 'CV De Kleintjes', title: 'Boer zoekt Vrouw' },
-        { id: 'k5', name: 'Duo Zonder Naam', title: 'Peppi en Kokki' },
+        { id: 'kw1', name: 'De Gemiste Kans' },
+        { id: 'kw2', name: 'AttaMottaMotta' },
+        { id: 'kw3', name: 'KMZ' },
     ],
-    loopgroepen: [
-        { id: 'l1', name: 'De Dansmarietjes', title: 'Swingend het jaar door' },
-        { id: 'l2', name: 'Vriendengroep X', title: 'Levende Standbeelden' },
-        { id: 'l3', name: 'School De Klimop', title: 'De tovenaarsleerlingen' },
-        { id: 'l4', name: 'De Buren', title: 'De Zoete Inval' },
-        { id: 'l5', name: 'Fanfare De Blaasbalg', title: 'Muziek uit de ruimte' },
-        { id: 'l6', name: 'CV De Stoppers', title: 'Verkeersregelaars' },
-    ]
+    groteWagens: [
+        { id: 'gw1', name: 'Kroam\'13' },
+        { id: 'gw2', name: 'Hertenkamp' },
+        { id: 'gw3', name: 'Elsje' },
+    ],
 };
 
 export class StaticParticipantRepository implements IParticipantRepository {

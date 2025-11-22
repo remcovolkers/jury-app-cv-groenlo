@@ -1,15 +1,21 @@
 import { IAuthService } from '../../domain/ports/IAuthService';
 
 const INITIAL_DATA = {
-    groteWagens: [
-        { id: 'g1' }, { id: 'g2' }, { id: 'g3' }, { id: 'g4' }, { id: 'g5' }, { id: 'g6' },
+    kindergroepen: [
+        { id: 'kg1' }, { id: 'kg2' }, { id: 'kg3' },
+    ],
+    kleineLoopgroepen: [
+        { id: 'kl1' }, { id: 'kl2' }, { id: 'kl3' },
+    ],
+    groteGroepen: [
+        { id: 'gg1' }, { id: 'gg2' }, { id: 'gg3' },
     ],
     kleineWagens: [
-        { id: 'k1' }, { id: 'k2' }, { id: 'k3' }, { id: 'k4' }, { id: 'k5' },
+        { id: 'kw1' }, { id: 'kw2' }, { id: 'kw3' },
     ],
-    loopgroepen: [
-        { id: 'l1' }, { id: 'l2' }, { id: 'l3' }, { id: 'l4' }, { id: 'l5' }, { id: 'l6' },
-    ]
+    groteWagens: [
+        { id: 'gw1' }, { id: 'gw2' }, { id: 'gw3' },
+    ],
 };
 
 const getAllIds = () => {
@@ -21,9 +27,8 @@ const getAllIds = () => {
 };
 
 const JURY_ASSIGNMENTS: Record<string, string[]> = {
-    'JURY1': ['g1', 'g2', 'g3', 'l1', 'l2', 'l3', 'l4', 'l5', 'l6'],
-    'JURY2': ['g4', 'g5', 'g6', 'k1', 'k2', 'k3', 'k4', 'k5'],
-    'JURY3': ['k1', 'l3'],
+    'JURY1': ['kg1', 'kg2', 'kl1', 'kl2', 'gg1', 'gg2', 'kw1', 'kw2'],
+    'JURY2': ['kg3', 'kl3', 'gg3', 'kw3', 'gw1', 'gw2', 'gw3'],
     'ADMIN': getAllIds()
 };
 

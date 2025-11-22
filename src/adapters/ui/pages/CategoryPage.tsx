@@ -51,7 +51,6 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({
                             <div className="flex justify-between items-start">
                                 <div className="pr-8">
                                     <h3 className="font-bold text-gray-800">{participant.name}</h3>
-                                    <p className="text-gray-600 text-sm italic mt-1">"{participant.title}"</p>
                                 </div>
                                 {hasVoted ? (
                                     <div className="flex flex-col items-end">
